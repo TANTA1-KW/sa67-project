@@ -16,7 +16,7 @@ type Users struct {
     Password   string    `json:"-"`
     BirthDay   time.Time `json:"birthday"`
     GenderID   uint      `json:"gender_id"`
-    Genders    *Genders   `gorm:"foreignKey:GenderID" json:"gender"`  // ชื่อ ForeignKey ที่ตรงกับฟิลด์
+    Gender    *Genders   `gorm:"foreignKey:GenderID" json:"gender"`  // ชื่อ ForeignKey ที่ตรงกับฟิลด์
     LeaveRequestID    uint      `json:"leaverequest_id"`
     LeaveRequest      *LeaveRequest    `gorm:"foreignKey:LeaveRequestID" json:"leaverequest"`     // ชื่อ ForeignKey ที่ตรงกับฟิลด์
 }
