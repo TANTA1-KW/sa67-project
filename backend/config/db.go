@@ -95,6 +95,8 @@ func SetupDatabase() {
 
        BirthDay:  BirthDay,
 
+       Address: "korat ban เอ๋ง",
+
        GenderID:  1,
 
    }

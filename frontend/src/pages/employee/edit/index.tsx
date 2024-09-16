@@ -159,21 +159,13 @@ function EditEmployee() {
             <Col xs={24} sm={24} md={24} lg={24} xl={12}>
 
               <Form.Item
-
                 label="ชื่อจริง"
-
                 name="first_name"
-
                 rules={[
-
                   {
-
                     required: true,
-
                     message: "กรุณากรอกชื่อ !",
-
                   },
-
                 ]}
 
               >
