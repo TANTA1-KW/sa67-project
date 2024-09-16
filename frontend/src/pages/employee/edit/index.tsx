@@ -36,6 +36,8 @@ function EditEmployee() {
     if (res.status == 200) {
 
       form.setFieldsValue({
+        
+        roles: res.data.roles,
 
         first_name: res.data.first_name,
 
@@ -51,6 +53,8 @@ function EditEmployee() {
 
         address: res.data.address,
 
+        phone: res.data.phone,
+        
       });
 
     } else {
@@ -185,7 +189,7 @@ function EditEmployee() {
 
               <Form.Item
 
-                label="นามกสุล"
+                label="นามสกุล"
 
                 name="last_name"
 
@@ -211,48 +215,41 @@ function EditEmployee() {
 
 
             <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-
+              
               <Form.Item
 
-                label="อีเมล"
+                label="ตำแหน่ง"
 
-                name="email"
+                name="roles"
 
                 rules={[
 
                   {
 
-                    type: "email",
-
-                    message: "รูปแบบอีเมลไม่ถูกต้อง !",
-
-                  },
-
-                  {
-
                     required: true,
 
-                    message: "กรุณากรอกอีเมล !",
+                    message: "กรุณากรอกตำแหน่ง !",
 
                   },
 
                 ]}
 
-              >
+            >
 
                 <Input />
 
               </Form.Item>
-
+              
             </Col>
+
 
             <Col xs={24} sm={24} md={24} lg={24} xl={12}>
 
               <Form.Item
 
-                label="ที่อยู่"
+                label="อายุ"
 
-                name="address"
+                name="age"
 
                 rules={[
 
@@ -260,7 +257,7 @@ function EditEmployee() {
 
                     required: true,
 
-                    message: "กรุณากรอกที่อยู่ !",
+                    message: "กรุณากรอกอายุ !",
 
                   },
 
@@ -268,9 +265,19 @@ function EditEmployee() {
 
               >
 
-                <Input.TextArea rows={4}/>
+              <InputNumber
 
-              </Form.Item>
+                min={0}
+
+                max={99}
+
+                defaultValue={0}
+
+                style={{ width: "100%" }}
+
+              />
+
+            </Form.Item>
 
             </Col>
 
@@ -302,63 +309,26 @@ function EditEmployee() {
 
             </Col>
 
-            <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-
-              <Form.Item
-
-                label="อายุ"
-
-                name="age"
-
-                rules={[
-
-                  {
-
-                    required: true,
-
-                    message: "กรุณากรอกอายุ !",
-
-                  },
-
-                ]}
-
-              >
-
-                <InputNumber
-
-                  min={0}
-
-                  max={99}
-
-                  defaultValue={0}
-
-                  style={{ width: "100%" }}
-
-                />
-
-              </Form.Item>
-
-            </Col>
 
             <Col xs={24} sm={24} md={24} lg={24} xl={12}>
 
               <Form.Item
 
-                label="เพศ"
+                  label="เพศ"
 
-                name="gender_id"
+                  name="gender_id"
 
-                rules={[
+                  rules={[
 
-                  {
+                    {
 
-                    required: true,
+                      required: true,
 
-                    message: "กรุณาเลือกเพศ !",
+                      message: "กรุณาเลือกเพศ !",
 
-                  },
+                    },
 
-                ]}
+                  ]}
 
               >
 
@@ -370,18 +340,112 @@ function EditEmployee() {
 
                   options={[
 
-                    { value: "", label: "กรุณาเลือกเพศ", disabled: true },
+                  { value: "", label: "กรุณาเลือกเพศ", disabled: true },
 
-                    { value: 1, label: "Male" },
+                  { value: 1, label: "Male" },
 
-                    { value: 2, label: "Female" },
+                  { value: 2, label: "Female" },
 
                   ]}
 
                 />
 
               </Form.Item>
+          
 
+            </Col>
+
+            <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+
+
+            <Form.Item
+
+              label="อีเมล"
+
+              name="email"
+
+              rules={[
+
+                {
+
+                  type: "email",
+
+                  message: "รูปแบบอีเมลไม่ถูกต้อง !",
+
+                },
+
+                {
+
+                  required: true,
+
+                  message: "กรุณากรอกอีเมล !",
+
+                },
+
+              ]}
+
+            >
+
+                <Input />
+
+              </Form.Item>
+
+            </Col>
+
+            <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+
+            <Form.Item
+
+              label="ที่อยู่"
+
+              name="address"
+
+              rules={[
+
+            {
+
+              required: true,
+
+              message: "กรุณากรอกที่อยู่ !",
+
+            },
+
+]}
+
+>
+
+<Input.TextArea rows={1}/>
+
+</Form.Item>
+
+            </Col>
+
+            <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+              
+              <Form.Item
+
+                label="เบอร์โทร"
+
+                name="phone"
+
+                rules={[
+
+                  {
+
+                    required: true,
+
+                    message: "กรุณากรอกตำแหน่ง !",
+
+                  },
+
+                ]}
+
+            >
+
+                <Input />
+
+              </Form.Item>
+              
             </Col>
 
           </Row>
