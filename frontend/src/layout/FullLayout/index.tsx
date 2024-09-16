@@ -7,7 +7,7 @@ import Home from "../../pages/home";
 import EmployeePage from "../../pages/employee"; // เพิ่มการนำเข้าหน้า Employee
 import EditEmployee from "../../pages/employee/edit";
 import CreateEmployee from "../../pages/employee/create";
-
+import ProfilePage from "../../pages/profile"; // เพิ่มเส้นทางไปหน้าโปรไฟล์
 const { Header, Content, Footer } = Layout;
 
 const FullLayout: React.FC = () => {
@@ -190,8 +190,9 @@ const FullLayout: React.FC = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/employee" element={<EmployeePage />} /> {/* เพิ่ม Route สำหรับ Employee */}
                 <Route path="/employee/edit/:id" element={<EditEmployee />} />
-                <Route path="/employee/create" element={<CreateEmployee />}
-                />
+                <Route path="/employee/create" element={<CreateEmployee />} />
+                <Route path="/profile" element={<ProfilePage />} />{/* Add Profile Route */}
+                
               </Routes>
             </div>
           </Content>

@@ -30,6 +30,11 @@ function EmployeePage() {
       ),
     },
     {
+      title: "ตำแหน่ง",
+      dataIndex: "roles",
+      key: "roles",
+    },
+    {
       title: "ลำดับ",
       dataIndex: "ID",
       key: "id",

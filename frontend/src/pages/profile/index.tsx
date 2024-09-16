@@ -1,205 +1,150 @@
-import React, { useState } from "react";
-import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
-import { UserOutlined, DashboardOutlined, DownOutlined, TeamOutlined } from "@ant-design/icons";
-import { Breadcrumb, Layout, Menu, Button, message, Dropdown } from "antd";
-import logo from "../../assets/logo.png";
-import Home from "../../pages/home";
-import ProfilePage from "../../pages/profile";
-import EmployeePage from "../../pages/employee"; // เพิ่มการนำเข้าหน้า Employee
+import React, { useState, useEffect } from "react";
+import { Space, Button, Col, Row, Divider, Form, Input, Card, message, Typography } from "antd";
+import { useNavigate, Link } from "react-router-dom";
+import { UsersInterface } from "../../interfaces/IUser";
+import { GetUsers } from "../../services/https/index";
+import dayjs from "dayjs";
 
-const { Header, Content, Footer } = Layout;
+const { Title } = Typography;
 
-const FullLayout: React.FC = () => {
+function ProfilePage() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const page = localStorage.getItem("page");
+  const [user, setUser] = useState<UsersInterface | null>(null);
   const [messageApi, contextHolder] = message.useMessage();
-  const [collapsed, setCollapsed] = useState(false);
+  const [form] = Form.useForm();
+  const myId = localStorage.getItem("id");
 
-  const setCurrentPage = (val: string) => {
-    localStorage.setItem("page", val);
-  };
-
-  const Logout = () => {
-    localStorage.clear();
-    messageApi.success("Logout successful");
-    setTimeout(() => {
-      navigate("/");
-    }, 2000);
-  };
-
-  const handleMenuClick = (e: { key: string }) => {
-    if (e.key === "logout") {
-      Logout();
-    } else if (e.key === "profile") {
-      setCurrentPage("profile");
-      navigate("/profile"); // นำทางไปหน้าโปรไฟล์
+  const getUserById = async (id: string) => {
+    try {
+      const res = await GetUsers();
+      const userData = res.find((user: UsersInterface) => user.ID === Number(id));
+      if (userData) {
+        setUser(userData);
+        form.setFieldsValue({
+          first_name: userData.FirstName,
+          last_name: userData.LastName,
+          age: userData.Age,
+          birthday: userData.BirthDay,
+          email: userData.Email,
+          roles: userData.Roles,
+        });
+      } else {
+        messageApi.open({
+          type: "error",
+          content: "ไม่พบข้อมูลผู้ใช้",
+        });
+        setTimeout(() => {
+          navigate("/profile");
+        }, 2000);
+      }
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "เกิดข้อผิดพลาดในการดึงข้อมูลผู้ใช้",
+      });
     }
   };
 
-  const userMenu = (
-    <Menu
-      onClick={handleMenuClick}
-      style={{ 
-        fontFamily: 'Kanit, sans-serif',
-        backgroundColor: '#003366',
-        color: '#FFD700',
-        border: 'none'
-      }}
-    >
-      <Menu.Item
-        key="profile"  // ตั้งค่า key เป็น 'profile'
-        style={{ 
-          fontFamily: 'Kanit, sans-serif',
-          color: '#FFD700',
-          transition: 'background 0.3s',
-          backgroundColor: 'transparent',
-          borderRadius: '4px',
-        }}
-      >
-        <UserOutlined style={{ marginRight: '8px', color: '#FFD700' }} />
-        Profile
-      </Menu.Item>
-      <Menu.Item
-        key="logout"
-        style={{ 
-          fontFamily: 'Kanit, sans-serif',
-          color: '#FFD700',
-          transition: 'background 0.3s',
-          backgroundColor: 'transparent',
-          borderRadius: '4px',
-        }}
-      >
-        <UserOutlined style={{ marginRight: '8px', color: '#FFD700' }} />
-        Log out
-      </Menu.Item>
-    </Menu>
-  );
+  useEffect(() => {
+    if (myId) {
+      getUserById(myId);
+    }
+  }, [myId]);
+
+  if (!user) {
+    return <div>กำลังโหลดข้อมูล...</div>;
+  }
 
   return (
-    <Layout style={{ minHeight: "100vh", fontFamily: 'Kanit, sans-serif', backgroundColor: '#003366' }}>
+    <div style={{ fontFamily: 'Kanit, sans-serif', padding: '20px' }}>
       {contextHolder}
-      <Layout style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <Header style={{ background: "#003366", height: "80px", padding: "0 16px", position: 'fixed', width: '100%', top: 0, zIndex: 1000 }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              height: "100%",
-              justifyContent: "space-between",
-            }}
-          >
-            {/* Left Section: Logo */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <img src={logo} alt="Logo" style={{ width: "60px", height: "auto", marginRight: "16px" }} />
-            </div>
-            
-            {/* Right Section: Menu and User Dropdown */}
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <Menu
-                theme="dark"
-                mode="horizontal"
-                defaultSelectedKeys={[page ? page : "home"]}
-                selectedKeys={[location.pathname]}
-                style={{ 
-                  background: "transparent", 
-                  border: 'none', 
-                  marginRight: '16px',
-                  lineHeight: '64px',
-                  fontFamily: 'Kanit, sans-serif'
-                }}
+      <Card>
+        <Title level={2} style={{ fontSize: '24px', color: '#003366', fontFamily: 'Kanit, sans-serif' }}>ข้อมูลผู้ใช้</Title>
+        <Divider />
+        <Form
+          form={form}
+          layout="vertical"
+          autoComplete="off"
+        >
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={24} md={12}>
+              <Form.Item
+                label={<span style={{ fontSize: '16px', color: '#003366', fontFamily: 'Kanit, sans-serif' }}>ชื่อ</span>}
+                name="first_name"
               >
-                <Menu.Item
-                  key="/"
-                  onClick={() => setCurrentPage("home")}
-                  style={{ 
-                    borderRadius: '4px', 
-                    transition: 'background 0.3s', 
-                    background: location.pathname === "/" ? "#1a2a40" : "transparent",
-                    marginRight: '16px', 
-                    color: '#FFD700',
-                  }}
-                  className="menu-item"
-                >
-                  <Link to="/" style={{ display: 'flex', alignItems: 'center', color: '#FFD700', fontFamily: 'Kanit, sans-serif' }}>
-                    <DashboardOutlined style={{ marginRight: '8px' }} />
-                    <span>Home</span>
+                <Input style={{ fontSize: '16px', borderRadius: '8px', border: '1px solid #003366' }} readOnly />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={24} md={12}>
+              <Form.Item
+                label={<span style={{ fontSize: '16px', color: '#003366', fontFamily: 'Kanit, sans-serif' }}>นามสกุล</span>}
+                name="last_name"
+              >
+                <Input style={{ fontSize: '16px', borderRadius: '8px', border: '1px solid #003366' }} readOnly />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={24} md={12}>
+              <Form.Item
+                label={<span style={{ fontSize: '16px', color: '#003366', fontFamily: 'Kanit, sans-serif' }}>ตำแหน่ง</span>}
+                name="roles"
+              >
+                <Input style={{ fontSize: '16px', borderRadius: '8px', border: '1px solid #003366' }} readOnly />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={24} md={12}>
+              <Form.Item
+                label={<span style={{ fontSize: '16px', color: '#003366', fontFamily: 'Kanit, sans-serif' }}>อายุ</span>}
+                name="age"
+              >
+                <Input style={{ fontSize: '16px', borderRadius: '8px', border: '1px solid #003366' }} readOnly />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={24} md={12}>
+              <Form.Item
+                label={<span style={{ fontSize: '16px', color: '#003366', fontFamily: 'Kanit, sans-serif' }}>วัน/เดือน/ปี เกิด</span>}
+                name="birthday"
+              >
+                <Input
+                  style={{ fontSize: '16px', borderRadius: '8px', border: '1px solid #003366' }}
+                  readOnly
+                  value={user.BirthDay ? dayjs(user.BirthDay).format('DD/MM/YYYY') : ''}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={24} md={12}>
+              <Form.Item
+                label={<span style={{ fontSize: '16px', color: '#003366', fontFamily: 'Kanit, sans-serif' }}>อีเมล</span>}
+                name="email"
+              >
+                <Input style={{ fontSize: '16px', borderRadius: '8px', border: '1px solid #003366' }} readOnly />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row justify="end">
+            <Col style={{ marginTop: "40px" }}>
+              <Form.Item>
+                <Space>
+                  <Link to="/profile/edit">
+                    <Button
+                      type="primary"
+                      style={{
+                        fontSize: '16px',
+                        borderRadius: '8px',
+                        backgroundColor: '#003366',
+                        borderColor: '#003366'
+                      }}
+                    >
+                      แก้ไขข้อมูล
+                    </Button>
                   </Link>
-                </Menu.Item>
-
-                {/* เพิ่มเมนู Employee */}
-                <Menu.Item
-                  key="/employee"
-                  onClick={() => setCurrentPage("employee")}
-                  style={{ 
-                    borderRadius: '4px', 
-                    transition: 'background 0.3s', 
-                    background: location.pathname === "/employee" ? "#1a2a40" : "transparent",
-                    color: '#FFD700'
-                  }}
-                  className="menu-item"
-                >
-                  <Link to="/employee" style={{ display: 'flex', alignItems: 'center', color: '#FFD700', fontFamily: 'Kanit, sans-serif' }}>
-                    <TeamOutlined style={{ marginRight: '8px' }} />
-                    <span>Employee Management</span>
-                  </Link>
-                </Menu.Item>
-              </Menu>
-              <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight">
-                <Button
-                  style={{ 
-                    backgroundColor: "#003366", 
-                    color: "#FFD700", 
-                    border: 'none', 
-                    fontFamily: 'Kanit, sans-serif',
-                    borderRadius: '4px',
-                    marginLeft: '16px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    fontSize: '16px',
-                    padding: '0 16px',
-                    height: '40px'
-                  }}
-                >
-                  <UserOutlined style={{ marginRight: '8px', fontSize: '18px' }} />
-                  <DownOutlined />
-                </Button>
-              </Dropdown>
-            </div>
-          </div>
-        </Header>
-
-        <Layout style={{ marginTop: "48px", display: 'flex', flexDirection: 'column', flex: 1 }}>
-          <Content style={{ 
-            flex: 1, 
-            padding: 0,
-            margin: 0,
-            background: "#FFFFFF",
-            minHeight: 'calc(100vh - 80px - 64px)',
-            overflow: "hidden",
-          }}>
-            <Breadcrumb style={{ margin: "16px 0" }} />
-            <div>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/employee" element={<EmployeePage />} /> {/* เพิ่ม Route สำหรับ Employee */}
-              </Routes>
-            </div>
-          </Content>
-
-          <Footer style={{ textAlign: "center", background: "#003366", color: "#FFD700", height: '64px', fontFamily: 'Kanit, sans-serif' }}>
-            TWN RENT CAR
-          </Footer>
-        </Layout>
-      </Layout>
-    </Layout>
+                </Space>
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Card>
+    </div>
   );
-};
+}
 
-export default FullLayout;
+export default ProfilePage;
